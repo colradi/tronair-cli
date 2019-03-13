@@ -18,9 +18,6 @@ Create a file **index.js** in test_tronair directory with this contents:
 ```
 var air = require("tronair");
 
-async function start(){
-  var m = await air.main();
-}
 ```
 
 And just execute:
