@@ -11,6 +11,8 @@ The ultimate command-line airdrop tool for the Tron blockchain
 
 `npm install tronair`
 
+You need to declare an _environment variable_ (at the level of OS) called **PK** containing your private key.
+
 Create a file **index.js** in test_tronair directory with this contents:
 ```
 var air = require("tronair");
