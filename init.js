@@ -19,9 +19,9 @@ privateKey,
 );
 
 var menu = require("./menu.js");
-var tronair = require("./tronair.js");
+var tronair = require("./airdropper.js");
 
-async function main(test){
+async function start(test){
     var airdrop = await menu.collectData(tronWeb); //Collect airdrop info
     airdrop.test = test;
     var list; 
@@ -45,13 +45,20 @@ async function main(test){
         break;
     }
     
+    process.stdout.write("Sorting wallets by amount...\r");
+    list = list.sort(function (a, b) {  return b.amount - a.amount;  }); //ORDER DESC by amount
     
-    console.log( JSON.stringify(list));
-    console.log( {airdrop});
+    //console.log( JSON.stringify(list));
+    //console.log( {airdrop});
     airdrop.list = list;
-    
     var yes = await reports.confirmBefore(tronWeb, airdrop);
-    console.log( "proceed? " + yes );
+    
+    process.stdout.write("Removing zeros...\r");
+    list = list.filter(function (x) {  return x.amount > 0;  }); //ORDER DESC by amount
+    airdrop.list = list;
+    console.log(JSON.stringify(list));
+
+    //console.log( "proceed? " + yes );
     if(yes){ //THE ACTUAL AIRDROP HAPPENS HERE!!!!
         var air_results = await tronair.doAirdrop(tronWeb, airdrop, true);
         reports.explainResults(airdrop, air_results);
@@ -61,7 +68,7 @@ async function main(test){
 }
 
 
-module.exports.main = main;
+module.exports.start = start;
 
-var test = false; 
-var m = main(test);
+//var test = false; 
+//var m = start();

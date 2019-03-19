@@ -69,10 +69,11 @@ let questions = [
 	],
 	[  //new 3
 		{
-			type: 'number',
+			type: 'text',
 			name: 'amount',
 			message: 'Please type the amount you want to airdrop:',
 			validate: val => {
+				val = Number(val);
 				var msg = "Please type a value bigger than 0";
 				if(val <= 0) { return "Please type a value bigger than 0"; }
 				else if(val > airdrop.token_balance) { return "\x1b[97mCan \x1b[91mNOT\x1b[97m airdrop \x1b[96m" + val + " " + airdrop.token_abbr + '\x1b[97m\'s because your current balance is only \x1b[91m' + airdrop.token_balance + '\x1b[97m. Please write a smaller amount';}
@@ -192,7 +193,7 @@ async function collectData(tw){
 			airdrop.source = "file_name";
 			break;
 		}
-		console.log("\x1b[91mQuerying blockchain to calculate target wallets..\x1b[97m");
+		process.stdout.write("\x1b[91mQuerying blockchain to calculate target wallets..\x1b[97m\r");
 		return airdrop;
 	}
 	
@@ -279,7 +280,7 @@ async function getBalance(airdrop){
 		}else{
 			balance = found.value / Math.pow(10, airdrop.token_precision);  //hay que dividir entre la precision??
 		}
-		console.log("DEBUG: Wallet: " +address + " Balance of " + airdrop.token_abbr + " is " +  balance);
+		console.log("\x1b[93mYour current " + airdrop.token_abbr + " balance is " +  balance + "\x1b[97m");
 	}
 	airdrop.token_balance = balance;
 	return airdrop;

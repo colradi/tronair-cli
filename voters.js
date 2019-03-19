@@ -12,23 +12,8 @@
 }
 
 */
-var rp = require("request-promise")
+var apilister = require("./apilist.js"); //download from apilist.tronscan.org
 
-const votes_url = "https://apilist.tronscan.org/api/vote";
-/* configuration options for request-promise library */
-var votes_options = {
-    uri: votes_url,
-    qs: {
-        candidate: "TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP", // -> uri + '?access_token=xxxxx%20xxxxx'
-		start: 0,
-		limit: 40,
-		sort: "-votes" 
-    },
-    headers: {
-        'User-Agent': 'Request-Promise'
-    },
-    json: true // Automatically parses the JSON string in the response
-};
 
 /**
  *  Returns voters data for a gives SR/candidate 
@@ -37,14 +22,20 @@ var votes_options = {
  * @returns A json containing a "data" array with all the <voters,amount> for the given @airdrop
  */
 async function getVoters(airdrop){
-	votes_options.qs.candidate = airdrop.SR_address;
-	return rp(votes_options).catch(function (err) {//download the first page..
+	var allPages = await apilister.getVoters(airdrop.SR_address);
+	var voters = allPages.data;
+
+	airdrop.SR_votersCount = allPages.total;
+	airdrop.SR_votesCount = allPages.totalVotes; 
+
+/* 	return rp(votes_options).catch(function (err) {//download the first page..
 		console.log(" Error getting voters list from " + votes_url ) ;
 	}).then(page => { //..to find out how many voters
 		airdrop.SR_votersCount = page.total;
 		airdrop.SR_votesCount = page.totalVotes; //we already had that value from 'menu.js' but may have changed, so better update
 		var numPages = Math.floor(page.total / 40);
 		var promises = [];
+		console.log("El numero de paginas solicitadas es : " + numPages);
 		for(var i = 1 ; i<=numPages; i++){ 
 			votes_options.qs.start = i*40; // prepare paginations: 40, 80, 120, 160, ..
 			promises.push(rp(votes_options)); //request paginated pages
@@ -56,58 +47,64 @@ async function getVoters(airdrop){
 			return page; //REMEMBER: Array.prototype.push.apply MODIFIES ¡page!
 		})
 		.catch(function(err) {
-			console.log(" Error getting voters list from " + votes_url ) ;
+			console.log(" Error getting voters list from " + votes_url + " err:" + err ) ;
 		})
-		.then(function(allPages) {  
-			airdrop["SR_total_votes"] = allPages.totalVotes;
-			var voters = allPages.data;
-			airdrop["SR_total_votes_filtered"] = 0; //Discard airdrop.SR_votesCount, since now we may (*)REMOVE some voters depending on user desires
-			var testing_sum = 0;
-			
-			//(*)REMOVE voters depending on their number of votes (default: remove 0 votes voters)
-			//console.log("DEBUG: Remove voters with less than " + airdrop.votes_threshold + "? " +  airdrop.remove_voters_with_THRESHOLD_votes);
-			//process.stdout.write("DEBUG: From number-of-voters: " + voters.length + " ... ");
-			if(airdrop.remove_voters_with_THRESHOLD_votes){
-				voters = voters.filter(voter => { 
-					if(voter.votes > airdrop.votes_threshold) { airdrop["SR_total_votes_filtered"] += voter.votes; }
-					return (voter.votes > airdrop.votes_threshold); }); 
-			}
-			console.log("...to number-of-voters: " + voters.length + " after removing voters with votes > " + airdrop.votes_threshold );
-			airdrop["num_wallets_filtered"] = voters.length;
+		.then(function( allPages) {  */
+	airdrop["SR_total_votes"] = allPages.totalVotes;
+	//console.log({voters});
 
-			var arrTargets;
-			//Adjust rewards amount according to SUBCRITERIAS and trim out the relevant information:
-			switch (airdrop.criteria){
-				case airdrop.CRITERIAS.VOTERS_PROPORTIONAL:
-					console.log("\nairdrop.amount: " + airdrop.amount)
-					console.log("SR_total_votes_filtered: " + airdrop.SR_total_votes_filtered);
-					var reward_per_vote =  airdrop.amount / airdrop.SR_total_votes_filtered; 
-					console.log("reward per vote: " + reward_per_vote)
-					arrTargets = voters.map( voter => {
-						var reward = voter.votes*reward_per_vote;
-						var amount = reward * Math.pow(10, airdrop.token_precision); 
-						amount = Math.floor(amount);//discard the decimals
-						//console.log(airdrop.token_precision + " >>> " + voter.voterAddress + " reward: " + reward + " amount: " + amount);
-						testing_sum += amount;
-						return {address: voter.voterAddress, amount: amount}; 
-					}); 
-					break;
-				case airdrop.CRITERIAS.VOTERS_EQUAL:
-					var reward = airdrop.amount / airdrop.num_wallets_filtered;
-					var amount = reward * Math.pow(10, airdrop.token_precision); 
-					amount = Math.floor(amount);//discard the decimals
-					arrTargets = voters.map( voter => { 
-						testing_sum += amount;
-						return {address: voter.voterAddress, amount: amount}; 
-					});
-					break;
-				//case airdrop.CRITERIAS.HOLDERS:
-				//case Add here new CRITERIAS: ...
-			}
-			//DEBUG console.log(testing_sum);
-			return arrTargets;
-		});
- 	} )
+	//---------------------------- THRESHOLD VOTING -------------------------------------------------
+	//Getting ready for the future THRESHOLD functionality
+	airdrop["SR_total_votes_filtered"] = airdrop.SR_votesCount; //Discard airdrop.SR_votesCount, since now we may (*)REMOVE some voters depending on user desires
+	var testing_sum = 0;
+	
+	//(*)REMOVE voters depending on their number of votes (default: remove 0 votes voters)
+	//console.log("DEBUG: Remove voters with less than " + airdrop.votes_threshold + "? " +  airdrop.remove_voters_with_THRESHOLD_votes);
+	//process.stdout.write("DEBUG: From number-of-voters: " + voters.length + " ... ");
+	
+	/*  FUNCIONALIDAD FUTURA: Remove voters below threshold  TODO TODO TODO
+	if(airdrop.remove_voters_with_THRESHOLD_votes){
+		voters = voters.filter(voter => { 
+			if(voter.votes > airdrop.votes_threshold) { airdrop["SR_total_votes_filtered"] += voter.votes; }
+			return (voter.votes > airdrop.votes_threshold); }); 
+		}
+		console.log("...to number-of-voters: " + voters.length + " after removing voters with votes > " + airdrop.votes_threshold );
+		*/
+		airdrop["num_wallets_filtered"] = voters.length; //Getting ready for the future THRESHOLD functionality
+	//---------------------------- THRESHOLD VOTING -------------------------------------------------
+ 
+	var arrTargets;
+	//Adjust rewards amount according to SUBCRITERIAS and trim out the relevant information:
+	switch (airdrop.criteria){
+		case airdrop.CRITERIAS.VOTERS_PROPORTIONAL:
+			//console.log("\nairdrop.amount: " + airdrop.amount)
+			//console.log("SR_total_votes_filtered: " + airdrop.SR_total_votes_filtered);
+			var reward_per_vote =  airdrop.amount / airdrop.SR_total_votes_filtered; 
+			//console.log("reward per vote: " + reward_per_vote)
+			arrTargets = voters.map( voter => {
+				var reward = voter.votes*reward_per_vote;
+				var amount = reward * Math.pow(10, airdrop.token_precision); 
+				amount = Math.floor(amount);//discard the decimals
+				//console.log(airdrop.token_precision + " >>> " + voter.voterAddress + " reward: " + reward + " amount: " + amount);
+				testing_sum += amount;
+				return {address: voter.voterAddress, amount: amount}; 
+			}); 
+			break;
+		case airdrop.CRITERIAS.VOTERS_EQUAL:
+			var reward = airdrop.amount / airdrop.num_wallets_filtered;
+			var amount = reward * Math.pow(10, airdrop.token_precision); 
+			amount = Math.floor(amount);//discard the decimals
+			arrTargets = voters.map( voter => { 
+				testing_sum += amount;
+				return {address: voter.voterAddress, amount: amount}; 
+			});
+			break;
+		//case airdrop.CRITERIAS.HOLDERS:
+		//case Add here new CRITERIAS: ...
+	}
+	//DEBUG console.log(testing_sum);
+	return arrTargets;
 }
+
 
 module.exports.getVoters = getVoters;
