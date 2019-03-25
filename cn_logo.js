@@ -41,7 +41,10 @@ console.log("\x1b[91m                                   ###########/            
 console.log("\x1b[91m                                      #####.                                   ");
 console.log("                               Welcome to TRONAIR-CLI");
 console.log("\x1b[91m           The ultimate command line \x1b[94mairdrop\x1b[91m tool for the TRON blockchain");
-console.log("\x1b[91m                        Telegram: https://t.me/CommunityNode");
+console.log("\x1b[91m                       Telegram: https://t.me/CommunityNode");
+console.log("\x1b[93m                        If you need any help, please type:");
+console.log("\x1b[93m                             node index.js  --help\x1b[90m\n");
+
 //process.stdout.write("\x1b[94mLoading interface.. \x1b[91m\r");
 //console.log("");
 }

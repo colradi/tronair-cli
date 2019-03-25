@@ -21,7 +21,7 @@ var holders_options = {
     qs: {
         address: "TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP", // -> uri + '?access_token=xxxxx%20xxxxx'
 		start: 0,
-		limit: 100000,
+		limit: 10000,
 		sort: "-balance" 
     },
     headers: {
@@ -38,10 +38,11 @@ var holders_options = {
  */
 async function getHolders(airdrop){
 	holders_options.qs.address = airdrop.token2_ownerAddress;
+
 	return rp(holders_options).then(allHolders => { //= https://apilist.tronscan.org/api/tokenholders?sort=-balance&limit=100000&start=0&address=TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP 
 		var holders = allHolders.data;
 		var total_balance = 0;
-		
+		console.log({allHolders});
 
 		//TODO TODO TODO TODO meter lo del THRESHOLD en el airdrop.xxxxx
 
