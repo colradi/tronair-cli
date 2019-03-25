@@ -56,14 +56,10 @@ Example: Let's airdrop 999999 HELP tokens to holders of TRUC, equally splitted a
 
 ## Results
 Airdropping involves lots of transactions, and sometimes things can go wrong.
-In bot cases (attended or un-attended), tronair will generate a json file for SUCCESS and FAILED transactions
-
-`SUCCESS_9999_TRUC_2019_03_25at19_11_33.json` (and `FAILED_9999_TRUC_2019_03_25at19_11_33.json`
- containing the failed transactions)
-
-where 9999 is the airdropped amount, along with the date and time.
+In bot cases (attended or un-attended), tronair will generate json file for SUCCESS (`SUCCESS_9999_TRUC_2019_03_25at19_11_33.json`) and FAILED (`FAILED_9999_TRUC_2019_03_25at19_11_33.json`) transactions, with a descriptive name, where 9999 is the airdropped amount, along with the date and time.
 
 //TODO: Feed tronair-cli with FAILED files. 
+//TODO: Feed tronair with user CSV files
 
 ## Credits
 Find us on Telegram:
