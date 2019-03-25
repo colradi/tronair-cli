@@ -29,10 +29,10 @@ and this will start a promt that will ask all the details about your airdrop pre
 <p align="center">
 <img src="img/human.png" align="center">
 </p>
-and this will start a promt that will ask all the details about your airdrop preferences (what token are you going to airdrop, the amount, to whom are you airdropping, etc)
+Just follow step by step..
 
 ### - Human un-attended
-If you need, let's say, to _cron schedule_ your airdrops, the you can just pass the airdrop arguments in the command line:
+If you need, let's say, to _cron schedule_ your airdrops, then you can just pass the airdrop arguments in the command line:
 
 This is a list of the command line options:
 ```
@@ -43,8 +43,17 @@ This is a list of the command line options:
 -o, --holders number    Airdrop goes to wallets holding token with this id (ie: 1002000)
 -e, --equal             The rewards will equally divided among all holders/voters
 -p, --proportional      The rewards will be proportionally divided based on number of votes/holdings
-
 ```
++ Human un-attended examples
+
+Example: Let's airdrop 750000 TRUC tokens to voters of CommunityNode, proportionally to their votes:
+
+        `node cmd.js  -i 1000322 -v TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP -a 750000 -p`
+
+Example: Let's airdrop 999999 HELP tokens to holders of TRUC, equally splitted amongst all the wallets:
+
+        `node cmd.js  -i 1000562 -h 1000322 -a 999999 -e`
+
 ## Results
 Airdropping involves lots of transactions, and sometimes things can go wrong.
 In bot cases (attended or un-attended), tronair will generate a json file for SUCCESS and FAILED transactions
