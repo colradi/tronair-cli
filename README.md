@@ -48,11 +48,11 @@ This is a list of the command line options:
 
 Example: Let's airdrop 750000 TRUC tokens to voters of CommunityNode, proportionally to their votes:
 
-        node cmd.js  -i 1000322 -v TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP -a 750000 -p
+        node index.js  -i 1000322 -v TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP -a 750000 -p
 
 Example: Let's airdrop 999999 HELP tokens to holders of TRUC, equally splitted amongst all the wallets:
 
-        node cmd.js  -i 1000562 -h 1000322 -a 999999 -e
+        node index.js  -i 1000562 -h 1000322 -a 999999 -e
 
 ## Results
 Airdropping involves lots of transactions, and sometimes things can go wrong.
