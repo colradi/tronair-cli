@@ -12,7 +12,7 @@
 }
 
 */
-var apilister = require("./apilist.js"); //download from apilist.tronscan.org
+var apilister = require("apilister"); //download from apilist.tronscan.org
 
 
 /**

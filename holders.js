@@ -12,23 +12,10 @@
 }
 
 */
-var rp = require("request-promise")
+var apilister = require("apilister")
 
 const holders_url = "https://apilist.tronscan.org/api/tokenholders";
-/* configuration options for request-promise library */
-var holders_options = {
-    uri: holders_url,
-    qs: {
-        address: "TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP", // -> uri + '?access_token=xxxxx%20xxxxx'
-		start: 0,
-		limit: 10000,
-		sort: "-balance" 
-    },
-    headers: {
-        'User-Agent': 'Request-Promise'
-    },
-    json: true // Automatically parses the JSON string in the response
-};
+
 
 /**
  *  Returns holders data for a gives SR/candidate 
@@ -37,9 +24,8 @@ var holders_options = {
  * @returns A json containing a "data" array with all the <voters,amount> for the given @airdrop
  */
 async function getHolders(airdrop){
-	holders_options.qs.address = airdrop.token2_ownerAddress;
-
-	return rp(holders_options).then(allHolders => { //= https://apilist.tronscan.org/api/tokenholders?sort=-balance&limit=100000&start=0&address=TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP 
+	//holders_options.qs.address = airdrop.token2_ownerAddress;
+	var allHolders = await apilister.getHolders(airdrop.token2_ownerAddress);
 		var holders = allHolders.data;
 		var total_balance = 0;
 		console.log({allHolders});
@@ -94,7 +80,6 @@ async function getHolders(airdrop){
 		}
 		//console.log(testing_sum);
 		return arrTargets;
-	});
 }
 
 module.exports.getHolders = getHolders;

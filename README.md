@@ -61,6 +61,15 @@ In bot cases (attended or un-attended), tronair will generate json file for SUCC
 //TODO: Feed tronair-cli with FAILED files. 
 //TODO: Feed tronair with user CSV files
 
+UPDATE:
+04/06/2019 ADDED direct dependency on package apilister (https://www.npmjs.com/package/apilister)
+{ apilister:
+   { getVoters: [AsyncFunction: getVoters],
+     getVotersTronairFormat: [AsyncFunction: getVotersTronairFormat],
+     getHolders: [AsyncFunction: getHolders],
+     getHoldersTronairFormat: [AsyncFunction: getHoldersTronairFormat] }
+}
+
 ## Credits
 Find us on Telegram:
 https://t.me/CommunityNode
