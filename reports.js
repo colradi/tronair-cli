@@ -97,7 +97,7 @@ function saveToFile(filename, message, data){
 		//var path = __dirname + "\\" + filename;
 		//failures = { "data": failures }; // write contents in the appropiate format (tronvotes.format.JSON)
 
-		fs.appendFile( filename, JSON.stringify({"data": data}), function (err) {
+		fs.appendFile( filename, JSON.stringify({"dataX": data}), function (err) {
 			if (err) { 
 				console.log("Error when trying to create file " + filename);  
 			}else{

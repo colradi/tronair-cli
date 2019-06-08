@@ -40,7 +40,15 @@ async function start(){
         var token2 = require("./holders.js");
         list = await token2.getHolders(airdrop);
         break;
+    case airdrop.CRITERIAS.HOLDERS_FILE_PROPORTIONAL:
+        var token2 = require("./holders.js");
+        list = await token2.getHolders(airdrop);
+        break;
     case airdrop.CRITERIAS.HOLDERS_EQUAL:
+        var token2 = require("./holders.js");
+        list = await token2.getHolders(airdrop);
+        break;
+    case airdrop.CRITERIAS.HOLDERS_FILE_EQUAL:
         var token2 = require("./holders.js");
         list = await token2.getHolders(airdrop);
         break;
@@ -79,5 +87,5 @@ async function start(){
 
 module.exports.start = start;
 
-//var test = false; 
-//var m = start();
+var test = false; 
+var m = start();

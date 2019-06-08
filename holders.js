@@ -12,7 +12,8 @@
 }
 
 */
-var apilister = require("apilister")
+var apilister = require("apilister");
+const crit = require("./criterias.js");
 
 const holders_url = "https://apilist.tronscan.org/api/tokenholders";
 
@@ -25,7 +26,12 @@ const holders_url = "https://apilist.tronscan.org/api/tokenholders";
  */
 async function getHolders(airdrop){
 	//holders_options.qs.address = airdrop.token2_ownerAddress;
-	var allHolders = await apilister.getHolders(airdrop.token2_ownerAddress);
+	var allHolders;
+	if(airdrop.criteria == crit.CRITERIAS.HOLDERS_FILE_PROPORTIONAL || airdrop.criteria == crit.CRITERIAS.HOLDERS_FILE_EQUAL){
+		allHolders = apilister.getHoldersFromFile(airdrop.holdersFile);
+	}else{
+		allHolders = await apilister.getHolders(airdrop.token2_ownerAddress);
+	}
 		var holders = allHolders.data;
 		var total_balance = 0;
 		console.log({allHolders});
@@ -49,7 +55,8 @@ async function getHolders(airdrop){
 		var testing_sum = 0;
 		//ADJUST rewards amount according to SUBCRITERIAS and trim out the relevant information:
 		switch (airdrop.criteria){
-		case airdrop.CRITERIAS.HOLDERS_PROPORTIONAL:
+			case airdrop.CRITERIAS.HOLDERS_PROPORTIONAL:
+			case airdrop.CRITERIAS.HOLDERS_FILE_PROPORTIONAL:
 			console.log("\nairdrop.amount: " + airdrop.amount)
 			console.log("total_holders: " + num_wallets)
 			console.log("targets_balance_sum: " + total_balance);
@@ -65,6 +72,7 @@ async function getHolders(airdrop){
 			}); 
 			break;
 		case airdrop.CRITERIAS.HOLDERS_EQUAL:
+		case airdrop.CRITERIAS.HOLDERS_FILE_EQUAL:
 			console.log("\nairdrop.amount: " + airdrop.amount);
 			console.log("total_holders: " + num_wallets);
 			console.log("total_balance: " + total_balance);

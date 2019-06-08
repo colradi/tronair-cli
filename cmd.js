@@ -18,7 +18,8 @@ const opts = {
         'proportional':'p',
         'equal':'e',
         'amount':'a',
-        'help': 'h'
+        'help': 'h',
+        'holdersFile': 'f'
     } 
 }
 
@@ -69,7 +70,20 @@ async function collectData(tw){
             airdrop.token2_precision = token.precision || 0;
             if(argv.equal != undefined) { airdrop.criteria = crit.CRITERIAS.HOLDERS_EQUAL; }
             else { airdrop.criteria = crit.CRITERIAS.HOLDERS_PROPORTIONAL; } //defaulting to PROPORTIONAL in case no -e nor -p provided
-        } else { 
+        } else if( argv.holdersFile){
+            //COPY PASTEADO DEL DE ARRIBA: MODIFICAR para holdersFile
+            var holders = require(__dirname + "/" + argv.holdersFile);
+            airdrop.holdersFile = __dirname + "/" + argv.holdersFile; //holders.js will need this 
+            var token = await getRightToken(holders.token_id, tw); 
+            airdrop.token2_ownerAddress = tw.address.fromHex(token.owner_address);
+            airdrop.token2_name = token.name;
+            airdrop.token2_abbr = token.abbr;
+            airdrop.token2_id = token.id;
+            airdrop.token2_precision = token.precision || 0;
+            if(argv.equal != undefined) { airdrop.criteria = crit.CRITERIAS.HOLDERS_FILE_EQUAL; }
+            else { airdrop.criteria = crit.CRITERIAS.HOLDERS_FILE_PROPORTIONAL; } //defaulting to PROPORTIONAL in case no -e nor -p provided
+
+        }else{ 
             airdrop.SR_address = "" + argv.voters;
             //console.log("airdrop.SR_address: " + airdrop.SR_address);
             airdrop = await getRightSR(airdrop, tw);
@@ -132,8 +146,8 @@ function checkArgsValidity(argv, tw){
         process.exit(1);
     }
 
-    if(argv.voters == undefined && argv.holders == undefined){
-        console.log("Please specify option --holder or option --voters!");
+    if(argv.voters == undefined && argv.holders == undefined && argv.holdersFile == undefined){
+        console.log("Please specify option --holder or option --voters or option --holdersFile!");
         console.log(help());
         process.exit(1);
     }
@@ -149,7 +163,19 @@ function checkArgsValidity(argv, tw){
         console.log(help());
         process.exit(1);
     }
-    
+
+    if(argv.voters!= undefined  && argv.holdersFile!=undefined){ //options cant co-exist together
+        console.log("Voters are not expected to be found in the holders file " + argv.holdersFile + "!");
+        console.log(help());
+        process.exit(1);
+    }
+
+    if(argv.holders!= undefined  && argv.holdersFile!=undefined){ //options cant co-exist together
+        console.log("Please dont use -o (--holders) and -f (--holdersFile) at the same time !");
+        console.log(help());
+        process.exit(1);
+    }
+
     if(argv.holders!= undefined && isNaN(argv.holders)){
         console.log(argv.holders + " is not a valid token id!");
         console.log(help());
@@ -202,6 +228,8 @@ function printHelp(){
     console.log("\t\x1b[36m\tnode " + scriptName + "  -i 1000322 -v TDGy2M9qWBepSHDEutWWxWd1JZfmAed3BP -a 750000 -p\x1b[90m\n");
     console.log("\tExample: Let's airdrop 999999 HELP tokens to holders of TRUC, equally splitted amongst all the wallets:");
     console.log("\t\x1b[36m\tnode " + scriptName + "  -i 1000562 -h 1000322 -a 999999 -e\x1b[90m\n");
+    console.log("\tExample: Let's airdrop 888888 HELP tokens to holders of provided in file 'holdersABC.json', equally splitted amongst all the wallets:");
+    console.log("\t\x1b[36m\tnode " + scriptName + "  -i 1000562 -holdersFile holdersABC.json -a 888888 -e\x1b[90m\n");
     
     console.log("\x1b[97m\x1b[4mGolbal options\x1b[0m\x1b[90m\n");
     console.log("\x1b[97m-h, --help\x1b[90m\t\tShows this help");
@@ -211,6 +239,7 @@ function printHelp(){
     console.log("\x1b[97m-o, --holders\x1b[90m number\tAirdrop goes to wallets holding token with this id (ie: \x1b[36m1002000\x1b[0m)");
     console.log("\x1b[97m-e, --equal\x1b[90m\t\tThe rewards will equally divided among all holders/voters");
     console.log("\x1b[97m-p, --proportional\t\x1b[90mThe rewards will be proportionally divided based on number of votes/holdings\x1b[0m");
+    console.log("\x1b[97m-f, --holdersFile\t\x1b[90mjson file containing the holders (@see https://www.npmjs.com/package/apilister for formatting info). If provided, holders will be read from here and not from apilist service\x1b[0m");
     console.log("\n\x1b[36mSupport: https://t.me/CommunityNode \x1b[0m");
 }
 
